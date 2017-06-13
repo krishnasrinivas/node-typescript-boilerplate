@@ -1,22 +1,23 @@
-/**
- * Returns a Promise<string> that resolves after given time.
- *
- * @param {string} name - Somebody's name
- * @param {number=} [delay=2000] - Number of milliseconds to delay resolution.
- * @returns {Promise<string>}
- */
-function delayedHello(name: string, delay: number = 2000): Promise<string> {
-  return new Promise(
-    (resolve: (value?: {} | PromiseLike<{}>) => void) => setTimeout(
-      () => resolve(`Hello, ${name}`),
-      delay
-    )
-  );
-}
+import * as minio from 'minio'
 
-// Below is an example of using TSLint errors suppression
-// Here it's supressing missing type definitions for greeter function
+var s3Client = new minio.Client({
+    endPoint: 'localhost',
+    port: 9000,
+    secure: false,
+    accessKey: 'SXO8VW2OFKKP2OG7AC85',
+    secretKey: 'CKWSSgrUgvfUMTaNBkB63exet4WW+uNhQvi91Bc3',
+})
 
-export async function greeter(name) { // tslint:disable-line typedef
-  return await delayedHello(name); // tslint:disable-line no-unsafe-any
-}
+s3Client.traceOn();
+s3Client.getObject('test', 'passwd', function (e, dataStream) {
+    if (e) {
+        return console.log(e);
+    }
+    dataStream.on('data', function (data) {
+        console.log(data.toString());
+    });
+    dataStream.on('error', function (e) {
+        console.log(e);
+    });
+});
+
